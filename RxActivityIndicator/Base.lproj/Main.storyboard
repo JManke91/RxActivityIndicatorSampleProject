@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="RxActivityIndicator" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HTa-iD-FKU">
+                                <rect key="frame" x="117" y="438" width="180" height="30"/>
+                                <color key="backgroundColor" red="0.1959964441" green="1" blue="0.18990289020000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="180" id="lJX-a6-f9t"/>
+                                </constraints>
+                                <state key="normal" title="Make success request">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="successButtonPressed" destination="BYZ-38-t0r" eventType="touchUpInside" id="oUR-z2-p6O"/>
+                                </connections>
+                            </button>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wMu-f6-tc2">
+                                <rect key="frame" x="197" y="493" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="YdQ-w9-cca"/>
+                                    <constraint firstAttribute="width" constant="20" id="h4Y-kW-fqY"/>
+                                </constraints>
+                            </activityIndicatorView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vv8-we-YyE">
+                                <rect key="frame" x="117" y="398" width="180" height="30"/>
+                                <color key="backgroundColor" red="0.83743780850000005" green="0.015678269389999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="180" id="oq0-A9-Pwn"/>
+                                </constraints>
+                                <state key="normal" title="Make error request">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="errorButtonPressed" destination="BYZ-38-t0r" eventType="touchUpInside" id="cAE-y4-Fh2"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="wMu-f6-tc2" firstAttribute="top" secondItem="HTa-iD-FKU" secondAttribute="bottom" constant="25" id="0HK-Vw-1GU"/>
+                            <constraint firstItem="wMu-f6-tc2" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="P0f-ps-6tq"/>
+                            <constraint firstItem="HTa-iD-FKU" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="R35-ZD-gEw"/>
+                            <constraint firstItem="HTa-iD-FKU" firstAttribute="top" secondItem="Vv8-we-YyE" secondAttribute="bottom" constant="10" id="Sf1-nY-p4O"/>
+                            <constraint firstItem="HTa-iD-FKU" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="Zgh-ce-ow5"/>
+                            <constraint firstItem="Vv8-we-YyE" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="sjj-Wd-Djf"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <connections>
+                        <outlet property="activityIndicator" destination="wMu-f6-tc2" id="UC6-TG-9dh"/>
+                        <outlet property="makeErrorRequestButton" destination="Vv8-we-YyE" id="D4Y-Ah-EXA"/>
+                        <outlet property="makeSuccessRequestButton" destination="HTa-iD-FKU" id="oun-h4-x77"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="137.68115942028987" y="135.9375"/>
+        </scene>
+    </scenes>
+</document>
