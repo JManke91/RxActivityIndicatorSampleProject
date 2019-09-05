@@ -38,6 +38,28 @@ public class ActivityIndicator : SharedSequenceConvertibleType {
             }, onSubscribe: sendLoading)
     }
 
+    fileprivate func trackActivityOfSingle<O: PrimitiveSequenceType>(_ source: O) -> Single<O.Element> {
+        return source.primitiveSequence.asObservable().take(1).asSingle()
+            .do(onSuccess: { _ in
+                self.sendStopLoading()
+            }, onError: { _ in
+                self.sendError()
+            }, onSubscribe: {
+                self.sendLoading()
+            })
+    }
+
+    fileprivate func trackActivityOfCompletable<O: PrimitiveSequenceType>(_ source: O) -> Completable {
+        return source.primitiveSequence.asObservable().take(1).ignoreElements()
+            .do(onError: { _ in
+                self.sendError()
+            }, onCompleted: {
+                self.sendStopLoading()
+            }, onSubscribe: {
+                self.sendLoading()
+            })
+    }
+
     private func sendLoading() {
         lock.lock()
         loadingStateRelay.accept(LoadingState.loading)
@@ -62,4 +84,17 @@ extension ObservableConvertibleType {
         return activityIndicator.trackActivityOfObservable(self)
     }
 }
+
+extension PrimitiveSequenceType where Trait == SingleTrait {
+    public func trackActivity(_ activityIndicator: ActivityIndicator) -> Single<Element> {
+        return activityIndicator.trackActivityOfSingle(self)
+    }
+}
+
+extension PrimitiveSequence where Trait == CompletableTrait {
+    public func trackActivity(_ activityIndicator: ActivityIndicator) -> Completable {
+        return activityIndicator.trackActivityOfCompletable(self)
+    }
+}
+
 

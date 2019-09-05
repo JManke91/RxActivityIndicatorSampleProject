@@ -75,6 +75,34 @@ class MockRepository {
             .trackActivity(activityIndicator)
         }
     }
+
+    func observeCompletable() -> Completable {
+        return makeSuccessRequestCompletable()
+            .trackActivity(activityIndicator)
+    }
+
+    private func makeSuccessRequestCompletable() -> Completable {
+        return Completable.create { completable in
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+                completable(.completed)
+            }
+            return Disposables.create()
+        }
+    }
+
+    func observeSingle() -> Single<Bool> {
+        return makeSuccessRequestSingle()
+            .trackActivity(activityIndicator)
+    }
+
+    private func makeSuccessRequestSingle() -> Single<Bool> {
+        return Single.create { single in
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+                single(.success(true))
+            }
+            return Disposables.create()
+        }
+    }
 }
 
 enum ExpectedRequestResult {
