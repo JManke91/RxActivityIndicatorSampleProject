@@ -10,54 +10,31 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-public class ActivityIndicator : SharedSequenceConvertibleType {
+public class ActivityTracker: SharedSequenceConvertibleType {
     public func asSharedSequence() -> SharedSequence<DriverSharingStrategy, Element> {
         return sharedState
     }
 
+    public let loadingStateRelay = BehaviorRelay(value: LoadingState.initial)
     public typealias Element = LoadingState
     public typealias SharingStrategy = DriverSharingStrategy
 
     private let lock = NSRecursiveLock()
-    private let loadingStateRelay = BehaviorRelay(value: LoadingState.initial)
     private let sharedState: SharedSequence<SharingStrategy, LoadingState>
 
     public init() {
-        sharedState = loadingStateRelay.asDriver()
+        sharedState = loadingStateRelay
+            .asDriver()
             .distinctUntilChanged()
     }
 
     fileprivate func trackActivityOfObservable<O: ObservableConvertibleType>(_ source: O) -> Observable<O.Element> {
         return source.asObservable()
-            .do(onNext: { _ in
-                self.sendStopLoading()
-            }, onError: { _ in
-                self.sendError()
-            }, onCompleted: {
-                self.sendStopLoading()
-            }, onSubscribe: sendLoading)
-    }
-
-    fileprivate func trackActivityOfSingle<O: PrimitiveSequenceType>(_ source: O) -> Single<O.Element> {
-        return source.primitiveSequence.asObservable().take(1).asSingle()
-            .do(onSuccess: { _ in
-                self.sendStopLoading()
-            }, onError: { _ in
-                self.sendError()
-            }, onSubscribe: {
-                self.sendLoading()
-            })
-    }
-
-    fileprivate func trackActivityOfCompletable<O: PrimitiveSequenceType>(_ source: O) -> Completable {
-        return source.primitiveSequence.asObservable().take(1).ignoreElements()
-            .do(onError: { _ in
-                self.sendError()
-            }, onCompleted: {
-                self.sendStopLoading()
-            }, onSubscribe: {
-                self.sendLoading()
-            })
+            .do(onNext: { [weak self] _ in
+                self?.sendSuccess()
+                }, onError: { [weak self] _ in
+                    self?.sendError()
+                }, onSubscribe: sendLoading)
     }
 
     private func sendLoading() {
@@ -72,7 +49,7 @@ public class ActivityIndicator : SharedSequenceConvertibleType {
         lock.unlock()
     }
 
-    private func sendStopLoading() {
+    private func sendSuccess() {
         lock.lock()
         loadingStateRelay.accept(LoadingState.success)
         lock.unlock()
@@ -80,20 +57,8 @@ public class ActivityIndicator : SharedSequenceConvertibleType {
 }
 
 extension ObservableConvertibleType {
-    public func trackActivity(_ activityIndicator: ActivityIndicator) -> Observable<Element> {
+    public func trackActivity(_ activityIndicator: ActivityTracker) -> Observable<Element> {
         return activityIndicator.trackActivityOfObservable(self)
-    }
-}
-
-extension PrimitiveSequenceType where Trait == SingleTrait {
-    public func trackActivity(_ activityIndicator: ActivityIndicator) -> Single<Element> {
-        return activityIndicator.trackActivityOfSingle(self)
-    }
-}
-
-extension PrimitiveSequence where Trait == CompletableTrait {
-    public func trackActivity(_ activityIndicator: ActivityIndicator) -> Completable {
-        return activityIndicator.trackActivityOfCompletable(self)
     }
 }
 
