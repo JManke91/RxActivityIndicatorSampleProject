@@ -28,13 +28,25 @@ public class ActivityTracker: SharedSequenceConvertibleType {
             .distinctUntilChanged()
     }
 
-    fileprivate func trackActivityOfObservable<O: ObservableConvertibleType>(_ source: O) -> Observable<O.Element> {
+    fileprivate func track<O: ObservableConvertibleType>(_ source: O) -> Observable<O.Element> {
         return source.asObservable()
             .do(onNext: { [weak self] _ in
                 self?.sendSuccess()
                 }, onError: { [weak self] _ in
                     self?.sendError()
                 }, onSubscribe: sendLoading)
+    }
+
+    fileprivate func track<O: PrimitiveSequenceType>(_ source: O) -> Single<O.Element> where O.Trait == SingleTrait {
+        return source.do(onSuccess: { [weak self] _ in self?.sendSuccess() },
+                         onError: { [weak self] _ in self?.sendError() },
+                         onSubscribe: { [weak self] in self?.sendLoading() })
+    }
+
+    fileprivate func track<O: PrimitiveSequenceType>(_ source: O) -> Completable where O.Trait == CompletableTrait, O.Element == Swift.Never {
+        return source.do(onError: { [weak self] _ in self?.sendError() },
+                         onCompleted: { [weak self] in self?.sendSuccess() },
+                         onSubscribe: { [weak self] in self?.sendLoading() })
     }
 
     private func sendLoading() {
@@ -58,7 +70,19 @@ public class ActivityTracker: SharedSequenceConvertibleType {
 
 extension ObservableConvertibleType {
     public func trackActivity(_ activityIndicator: ActivityTracker) -> Observable<Element> {
-        return activityIndicator.trackActivityOfObservable(self)
+        return activityIndicator.track(self)
+    }
+}
+
+extension PrimitiveSequenceType where Trait == SingleTrait {
+    public func trackActivity(_ activityIndicator: ActivityTracker) -> Single<Element> {
+        return activityIndicator.track(self)
+    }
+}
+
+extension PrimitiveSequence where Trait == CompletableTrait, Element == Swift.Never {
+    public func trackActivity(_ activityIndicator: ActivityTracker) -> Completable {
+        return activityIndicator.track(self)
     }
 }
 
