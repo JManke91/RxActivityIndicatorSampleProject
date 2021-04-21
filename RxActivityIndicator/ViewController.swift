@@ -25,7 +25,6 @@ class ViewController: UIViewController {
         styleButtons()
 
         repository.newImplementationLoadingState()
-//        repository.oldImplementationLoadingState()
             .drive(onNext: { loadingState in
                 switch loadingState {
                 case .loading:
@@ -58,7 +57,6 @@ class ViewController: UIViewController {
     @IBAction func errorButtonPressed() {
         repository.observeProperty(for: ExpectedRequestResult.error).subscribe(onNext: { (property) in
         }, onError: { error in
-//            print("error occured: \(error)")
         })
         .disposed(by: disposeBag)
     }

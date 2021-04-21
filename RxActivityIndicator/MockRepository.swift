@@ -12,20 +12,12 @@ import RxCocoa
 
 class MockRepository {
 
-    // NEW
-    let activityIndicator = ActivityIndicator()
+    let activityTracker = ActivityTracker()
     var loadingState: Driver<LoadingState>
 
-    // OLD
-    var oldLoadingState = PublishSubject<LoadingState>()
 
     init() {
-        // NEW
-        self.loadingState = activityIndicator.asDriver()
-    }
-
-    func oldImplementationLoadingState() -> Driver<LoadingState> {
-        return oldLoadingState.asDriver(onErrorJustReturn: LoadingState.error)
+        self.loadingState = activityTracker.asDriver()
     }
 
     func newImplementationLoadingState() -> Driver<LoadingState> {
@@ -55,30 +47,17 @@ class MockRepository {
     func observeProperty(for expectedRequestResult: ExpectedRequestResult) -> Observable<Bool> {
         if expectedRequestResult == .success {
             return makeSuccessRequest()
-//                .do(onNext: { (_) in
-//                    self.oldLoadingState.onNext(LoadingState.success)
-//                }, onError: { (error) in
-//                    self.oldLoadingState.onNext(LoadingState.error)
-//                }, onSubscribe: {
-//                    self.oldLoadingState.onNext(LoadingState.loading)
-//                })
-                        .trackActivity(activityIndicator) // Replace this
+
+                .trackActivity(activityTracker)
         } else {
             return makeErrorRequest()
-//                .do(onNext: { (_) in
-//                    self.oldLoadingState.onNext(LoadingState.success)
-//                }, onError: { (error) in
-//                    self.oldLoadingState.onNext(LoadingState.error)
-//                }, onSubscribe: {
-//                    self.oldLoadingState.onNext(LoadingState.loading)
-//                })
-            .trackActivity(activityIndicator)
+                .trackActivity(activityTracker)
         }
     }
 
     func observeCompletable() -> Completable {
         return makeSuccessRequestCompletable()
-            .trackActivity(activityIndicator)
+            .trackActivity(activityTracker)
     }
 
     private func makeSuccessRequestCompletable() -> Completable {
@@ -92,7 +71,7 @@ class MockRepository {
 
     func observeSingle() -> Single<Bool> {
         return makeSuccessRequestSingle()
-            .trackActivity(activityIndicator)
+            .trackActivity(activityTracker)
     }
 
     private func makeSuccessRequestSingle() -> Single<Bool> {
